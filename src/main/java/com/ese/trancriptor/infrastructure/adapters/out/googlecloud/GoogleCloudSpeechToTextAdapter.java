@@ -3,7 +3,6 @@ package com.ese.trancriptor.infrastructure.adapters.out.googlecloud;
 import com.ese.trancriptor.domain.ports.out.SpeechToTextPort;
 import com.google.api.gax.longrunning.OperationFuture;
 import com.google.cloud.speech.v1.*;
-import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -23,17 +22,6 @@ public class GoogleCloudSpeechToTextAdapter implements SpeechToTextPort {
     }
 
     @Override
-    public String transcribe(byte[] audioData) {
-        ByteString audioBytes = ByteString.copyFrom(audioData);
-
-        RecognitionAudio audio = RecognitionAudio.newBuilder()
-                .setContent(audioBytes)
-                .build();
-
-        return executeTranscription(audio);
-    }
-
-    @Override
     public String transcribeFromGcs(String gcsUri) {
         RecognitionAudio audio = RecognitionAudio.newBuilder()
                 .setUri(gcsUri)
@@ -45,8 +33,6 @@ public class GoogleCloudSpeechToTextAdapter implements SpeechToTextPort {
     private String executeTranscription(RecognitionAudio audio) {
         RecognitionConfig config = RecognitionConfig.newBuilder()
                 .setEncoding(RecognitionConfig.AudioEncoding.FLAC)
-                .setAudioChannelCount(RecognitionConfig.AudioEncoding.FLAC.getNumber())
-                .setSampleRateHertz(48000)
                 .setLanguageCode("es-MX")
                 .setDiarizationConfig(SpeakerDiarizationConfig.newBuilder()
                         .setEnableSpeakerDiarization(true)
